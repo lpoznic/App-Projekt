@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Shirt Checker</string>
+    <string name="home_title">Svaki dan</string>
+    <string name="home_subtitle">NOVA ROBA</string>
+    <string name="order_title">Nova</string>
+    <string name="order_subtitle">Narudžba</string>
+    <string name="shirts_title">Narudžbena</string>
+    <string name="shirts_subtitle">Lista</string>
+</resources>

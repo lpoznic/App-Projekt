@@ -13,5 +13,5 @@ data class Order (
      val ordered:Boolean = false,
      val orderId:Int = 0,
      val customerName:String = "",
-     val orderDate: String = dateFormat.format(Date())
+     val orderDate: String = dateFormat.format(Date()),
 )

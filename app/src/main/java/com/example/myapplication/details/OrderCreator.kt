@@ -49,8 +49,8 @@ import com.example.myapplication.home.OrderCard
 import com.example.myapplication.models.Order
 import com.example.myapplication.models.Shirt
 
-val ascii = Shirt("Ascii", R.drawable.shirt_two)
-val linija = Shirt("Linija", R.drawable.shirt_one)
+val ascii = Shirt("Ascii", R.drawable.shirt_two, 0,"M")
+val linija = Shirt("Linija", R.drawable.shirt_one, 1,"L")
 val order = Order(listOf(ascii, linija),
     "Josipa Jurja Strossmayera 149",
     "huh@gmail.com",
@@ -130,6 +130,7 @@ fun ShirtContainer(shirts: List<Shirt>
                 ShirtCard(
                     shirtAmount = shirts.size,
                     shirtName = shirt.name,
+                    shirtSize = shirt.shirtSize,
                     shirtImage = shirt.image
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -142,6 +143,7 @@ fun ShirtContainer(shirts: List<Shirt>
 fun ShirtCard(
     shirtAmount: Int,
     shirtName: String,
+    shirtSize: String,
     @DrawableRes shirtImage: Int
 ) {
     OutlinedCard(
@@ -166,7 +168,14 @@ fun ShirtCard(
                     fontSize = 24.sp
                 ), modifier = Modifier.padding(horizontal = 16.dp)
             )
-            Spacer(modifier = Modifier.width(30.dp))
+            Text(  //veličina
+                text = shirtSize.uppercase(), style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.White,
+                    //fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp
+                ), modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.width(20.dp))
             Text(
                 text = shirtAmount.toString(), style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.LightGray,

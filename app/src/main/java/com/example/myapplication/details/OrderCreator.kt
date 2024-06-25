@@ -18,10 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -40,27 +38,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.home.OrderCard
-import com.example.myapplication.models.Order
-import com.example.myapplication.models.Shirt
-
-val ascii = Shirt("Ascii", R.drawable.shirt_two, 0,"M")
-val linija = Shirt("Linija", R.drawable.shirt_one, 1,"L")
-val order = Order(listOf(ascii, linija),
-    "Josipa Jurja Strossmayera 149",
-    "huh@gmail.com",
-    "0957982637",
-    false,
-    1,
-    "Huh Jpeg"
-)
-
-
+import com.example.myapplication.data.Shirt
 
 @Composable
 @Preview(showBackground = true)

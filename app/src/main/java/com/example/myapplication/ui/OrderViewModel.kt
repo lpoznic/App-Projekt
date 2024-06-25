@@ -30,19 +30,9 @@ class OrderViewModel(private val orderRepository: OrderRepository) : ViewModel()
         }
     }
 
-    fun addOrder() {
-        val newOrder = Order(
-            id = "",  // Firestore will generate this ID
-            customerName = name.value.orEmpty(),
-            address = address.value.orEmpty(),
-            email = email.value.orEmpty(),
-            phoneNumber = phone.value.orEmpty(),
-            shirts = selectedShirts.value.orEmpty(),
-            status = "Pending",
-            totalPrice = selectedShirts.value.orEmpty().sumOf { it.price }
-        )
+    fun addOrder(order: Order) {
         viewModelScope.launch {
-            orderRepository.addOrder(newOrder)
+            orderRepository.addOrder(order)
             loadOrders()  // Reload orders after adding
         }
     }

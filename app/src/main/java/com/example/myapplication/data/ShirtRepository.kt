@@ -1,6 +1,5 @@
 package com.example.myapplication.data
 
-import Shirt
 interface ShirtRepository {
     suspend fun addShirt(shirt: Shirt)
     suspend fun getShirts(): List<Shirt>

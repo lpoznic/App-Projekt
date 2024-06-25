@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "928432789527",
+    "project_id": "lpoznic-web-projekt",
+    "storage_bucket": "lpoznic-web-projekt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928432789527:android:8c71de383efdcd4598e452",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtLNoyMNa25LJNR_oTvfTHhxpOj0-x56g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

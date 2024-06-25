@@ -1,5 +1,9 @@
 package com.example.myapplication.data
 
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
+
 class FirestoreOrderRepository : OrderRepository {
     private val db = Firebase.firestore.collection("orders")
 
@@ -24,3 +28,4 @@ class FirestoreOrderRepository : OrderRepository {
     override suspend fun deleteOrder(orderId: String) {
         db.document(orderId).delete().await()
     }
+}

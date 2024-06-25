@@ -6,9 +6,7 @@ import com.example.myapplication.data.ShirtRepository
 import kotlinx.coroutines.launch
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-
-import Shirt
-
+import com.example.myapplication.data.Shirt
 class ShirtViewModel(private val shirtRepository: ShirtRepository) : ViewModel() {
     private val _shirts = MutableLiveData<List<Shirt>>()
     val shirts: LiveData<List<Shirt>> get() = _shirts

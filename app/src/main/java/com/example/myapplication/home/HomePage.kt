@@ -25,6 +25,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,10 +44,43 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import com.example.myapplication.data.Order
+import com.example.myapplication.data.Shirt
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.google.firebase.database.database
+
 
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenContent(){
+    val orders = remember { mutableStateListOf<Order>() }
+
+    // Fetch orders fromFirebase when the composable enters the composition
+    LaunchedEffect(Unit) {
+        val database = com.google.firebase.Firebase.database
+        val ordersRef = database.getReference("orders")
+
+        ordersRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                orders.clear()
+                for (orderSnapshot in snapshot.children) {
+                    val order = orderSnapshot.getValue(Order::class.java)
+                    order?.let { orders.add(it) }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {// Handle errors
+            }
+        })
+    }
+
     Column (
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -55,13 +90,13 @@ fun HomeScreenContent(){
         ScreenTitle(
             title = stringResource(id = R.string.home_subtitle),
             subtitle = stringResource(id = R.string.home_subtitle)
-    )
+        )
         SearchBar(
             iconResource = R.drawable.ic_search,
             labelText = "Search"
         )
         OrderContainer(
-            orders
+            orders = orders
         )
 
     }
@@ -139,16 +174,9 @@ fun OrderContainer(
 ){
     LazyColumn(){
         item{ Spacer(modifier = Modifier.height(10.dp),)}
-        orders.forEach{order ->
-            item{
-                OrderCard(
-                    customer = order.customerName,
-                    shirtAmount = order.shirt.size,
-                    state = order.ordered,
-                    date = order.orderDate
-                )
-                Spacer(modifier = Modifier.height(15.dp))
-            }
+        items(orders.size) { order ->
+            OrderCard(order = orders.get(order))
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }
@@ -156,74 +184,62 @@ fun OrderContainer(
 
 @Composable
 fun OrderCard(
-    customer: String,
-    shirtAmount: Int,
-    state: Boolean,
-    date: String
-    //navController: NavController,
-    //orderId : String
+    order: Order
 ) {
     Card(
         modifier = Modifier
-            .clickable {
-                //navController.navigate(getOrderDetailsPath(orderId))
-            }
             .width(360.dp)
             .height(110.dp)
             .fillMaxSize(),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF131111))
     ){
-        //Spacer(modifier = Modifier.weight(1f))
-        Row(
-            modifier = Modifier.padding(vertical = 5.dp).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-        Text(  //ime
-            text = customer, style = MaterialTheme.typography.bodyLarge.copy(
-                color = Color(0xFFFFFF6700),
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            ), modifier = Modifier.padding(horizontal = 16.dp)
-        )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text( //datum
-                text = date.toString(), style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color(0xFFFFFFFFFF),
-                    fontWeight = FontWeight.Light,
-                    fontSize = 14.sp
-                ), modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                textAlign = TextAlign.End
-            )
-        }
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ){
-            Text(
-                text = shirtAmount.toString(),
-                fontSize = 40.sp,
-                overflow = TextOverflow.Visible,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.White, fontWeight = FontWeight.Medium
-                ), modifier = Modifier.padding(horizontal = 22.dp)
-            )
-            Spacer(modifier = Modifier.width(240.dp))
-            Text(
-                if(state){"+"}else{"-"},
-                fontSize = 50.sp,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color(0xFFFFC107), fontWeight = FontWeight.ExtraBold
-                ),  modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier =Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = order.customerName,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color(0xFFFFFF6700),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = order.id, // Or any other relevant date/time field
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color(0xFFFFFFFFFF),
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp
+                    ),
                     textAlign = TextAlign.End
-            )
-
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Shirts: ${order.shirts.size}",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Total: $${String.format("%.2f", order.totalPrice)}",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White
+                    ),
+                    textAlign = TextAlign.End
+                )
+            }
         }
-
-
     }
-
 }
 

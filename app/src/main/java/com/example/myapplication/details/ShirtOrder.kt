@@ -28,6 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,15 +50,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
+import com.example.myapplication.data.FirestoreShirtRepository
 import com.example.myapplication.data.Shirt
 
-var shirts = listOf(ascii, linija)
-var shirtAmount = 0
+val testShirts = listOf(
+    Shirt(name = "Linija", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_one.png", size = "M", price = 19.99),
+    Shirt(name = "ASCII", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_two.png", size = "L", price = 19.99),
+    Shirt(name = "Čošak", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_three.png", size = "M", price = 19.99),
+    Shirt(name = "Imenica", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_four.png", size = "L", price = 19.99),
+    Shirt(name = "Logo", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_five.png", size = "M", price = 19.99),
+)
 
 
 @Composable
 @Preview(showBackground = true)
 fun ShirtOrderContent() {
+    val shirts = remember { mutableStateListOf<Shirt>() }
+    val shirtRepository = remember { FirestoreShirtRepository() }
+    LaunchedEffect(Unit) {
+        shirts.addAll(shirtRepository.getShirts())
+    }
+
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -81,7 +95,7 @@ fun AmountContainer() {
         modifier = Modifier.fillMaxWidth()
     ) {
         Button(
-            onClick = { shirtAmount++ },
+            onClick = { },
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(Color.LightGray)
         ) {
@@ -96,7 +110,7 @@ fun AmountContainer() {
         Box(
             modifier = Modifier.width(100.dp),
             contentAlignment = Alignment.Center){
-            Text(text = shirtAmount.toString(),
+            Text(text = testShirts.size.toString(),
                 style = TextStyle(
                     color = Color(0xFFFF6700),
                     fontSize = 35.sp,
@@ -104,7 +118,7 @@ fun AmountContainer() {
                     textAlign = TextAlign.Center))
         }
         Button(
-            onClick = { shirtAmount-- },
+            onClick = {  },
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(Color.LightGray)
         ) {
@@ -225,18 +239,20 @@ fun ShirtOrderContainer(shirts: List<Shirt>
         val currentActiveButton = remember { mutableStateOf(0) }
         LazyColumn(){
             item{ Spacer(modifier = Modifier.height(10.dp),)}
-            shirts.forEach{shirt ->
-                item{
+            if (shirts.isEmpty()) {
+                item {
+                    Text("No shirts available", modifier = Modifier.padding(16.dp))
+                }
+            } else {
+            items(shirts.size){index ->
                     ShirtButton(
-                        shirtName = shirt.name,
-                        isActive = currentActiveButton.value == shirt.shirtId,
-                        shirtImage = shirt.image
-                    ) {
-
-                    }
+                        shirtName = shirts[index].name,
+                        isActive = currentActiveButton.value == shirts[index].hashCode(),
+                        imageUrl = shirts[index].imageUrl
+                    ) {}
                     Spacer(modifier = Modifier.height(15.dp))
                 }
-                currentActiveButton.value = shirts.last().shirtId
+                currentActiveButton.value = 0
             }
         }
 }
@@ -244,7 +260,7 @@ fun ShirtOrderContainer(shirts: List<Shirt>
 @Composable
 fun ShirtButton(shirtName: String,
                 isActive: Boolean,
-                shirtImage: Int,
+                imageUrl: String,
                 onClick: () -> Unit) {
     Button(shape = RoundedCornerShape(7.dp),
         elevation = null,
@@ -272,11 +288,10 @@ fun ShirtButton(shirtName: String,
                 ), modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.width(5.dp))
-            Image(
-                painter = painterResource(id = shirtImage),
+            AsyncImage(
+                model = imageUrl,
                 contentDescription = shirtName,
-                modifier = Modifier.width(100.dp)
-            )
+                modifier = Modifier.width(100.dp))
         }
     }
 }

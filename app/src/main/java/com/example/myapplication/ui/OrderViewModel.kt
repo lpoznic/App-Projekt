@@ -4,15 +4,25 @@ package com.example.myapplication.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.Order
-import com.example.myapplication.data.OrderRepository
 import com.example.myapplication.data.Shirt;
 import kotlinx.coroutines.launch
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myapplication.repository.OrderRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+
+sealed class OrderState{
+    object Loading : OrderState()
+    data class Success(val orders: List<Order>) : OrderState()
+    //data class Error(val message: String) : OrderState()
+}
+
 
 class OrderViewModel(private val orderRepository: OrderRepository) : ViewModel() {
     private val _orders = MutableLiveData<List<Order>>()
     val orders: LiveData<List<Order>> get() = _orders
+
+    val state = MutableStateFlow<OrderState>(OrderState.Loading)
 
     val name = MutableLiveData<String>()
     val address = MutableLiveData<String>()
@@ -26,7 +36,7 @@ class OrderViewModel(private val orderRepository: OrderRepository) : ViewModel()
 
     private fun loadOrders() {
         viewModelScope.launch {
-            _orders.value = orderRepository.getAllOrders()
+            _orders.value = orderRepository.getOrders()
         }
     }
 
@@ -58,4 +68,11 @@ class OrderViewModel(private val orderRepository: OrderRepository) : ViewModel()
         this.phone.value = phone
         this.selectedShirts.value = shirts
     }
+
+     fun getOrders(){
+         viewModelScope.launch {
+             val result = orderRepository.getOrders()
+             state.value = OrderState.Success(result)
+         }
+     }
 }

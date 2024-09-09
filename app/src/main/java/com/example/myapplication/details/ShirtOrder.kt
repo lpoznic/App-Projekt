@@ -1,8 +1,8 @@
 package com.example.myapplication.details
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
+import androidx.navigation.NavController
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,18 +17,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,54 +36,58 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
-import com.example.myapplication.data.FirestoreShirtRepository
+import com.example.myapplication.data.Design
 import com.example.myapplication.data.Shirt
+import com.google.gson.Gson
 
-val testShirts = listOf(
-    Shirt(name = "Linija", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_one.png", size = "M", price = 19.99),
-    Shirt(name = "ASCII", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_two.png", size = "L", price = 19.99),
-    Shirt(name = "Čošak", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_three.png", size = "M", price = 19.99),
-    Shirt(name = "Imenica", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_four.png", size = "L", price = 19.99),
-    Shirt(name = "Logo", imageUrl = "https://lpoznic.github.io/Web-projekt/image/shirt_five.png", size = "M", price = 19.99),
-)
 
+
+
+var shirtAmount = 0
 
 @Composable
-@Preview(showBackground = true)
-fun ShirtOrderContent() {
-    val shirts = remember { mutableStateListOf<Shirt>() }
-    val shirtRepository = remember { FirestoreShirtRepository() }
-    LaunchedEffect(Unit) {
-        shirts.addAll(shirtRepository.getShirts())
-    }
+fun ShirtOrderContent(navController: NavController, shirts:List<Shirt>, designs: List<Design>) {
+    var modifiedShirts = remember { mutableStateListOf(shirts) }
 
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(Black),
     ) {
         ShirtOrderTitle(
             title = stringResource(id = R.string.shirts_title),
             subtitle = stringResource(id = R.string.shirts_subtitle)
         )
-        ShirtOrderContainer(shirts = shirts)
+        ShirtOrderContainer(designs = designs)
         SizeContainer()
         AmountContainer()
+        ShirtList(shirts)
     }
+
+    Button(onClick = {
+        val shirtsJson = Gson().toJson(modifiedShirts)
+        navController.navigate("orderDetailsScreen/$shirtsJson")
+    }) {
+        Text(text = "Spremi i izađi")
+    }
+
+
 }
+
+
+
 
 @Composable
 fun AmountContainer() {
@@ -95,22 +96,22 @@ fun AmountContainer() {
         modifier = Modifier.fillMaxWidth()
     ) {
         Button(
-            onClick = { },
+            onClick = { shirtAmount++ },
             shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(Color.LightGray)
+            colors = ButtonDefaults.buttonColors(LightGray)
         ) {
             // Inner content including an icon and a text label
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_plus),
                 contentDescription = "Favorite",
                 modifier = Modifier.size(20.dp),
-                tint = Color.Black
+                tint = Black
             )
         }
         Box(
             modifier = Modifier.width(100.dp),
             contentAlignment = Alignment.Center){
-            Text(text = testShirts.size.toString(),
+            Text(text = shirtAmount.toString(),
                 style = TextStyle(
                     color = Color(0xFFFF6700),
                     fontSize = 35.sp,
@@ -118,37 +119,25 @@ fun AmountContainer() {
                     textAlign = TextAlign.Center))
         }
         Button(
-            onClick = {  },
+            onClick = {
+                if(shirtAmount >0){
+                    shirtAmount--
+            }
+            },
             shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(Color.LightGray)
+            colors = ButtonDefaults.buttonColors(LightGray)
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_minus),
                 contentDescription = "Favorite",
                 modifier = Modifier.size(20.dp),
-                tint = Color.Black
+                tint = Black
             )
         }
     }
 }
 
 
-@Composable
-fun RoundedButton(modifier: Modifier, onClick: () -> Unit) {
-        Button(
-            onClick = { /* ... */ },
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(Color.LightGray)
-        ) {
-            // Inner content including an icon and a text label
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Favorite",
-                modifier = Modifier.size(20.dp),
-                tint = Color.Black
-            )
-        }
-}
 
 @Composable
 fun SizeContainer() {
@@ -165,31 +154,27 @@ fun SizeContainer() {
         TabButton(
             text = "S",
             isActive = currentActiveButton.value == 0,
-            modifier = Modifier.weight(1f)
-        ) {
-            currentActiveButton.value = 0
-        }
+            modifier = Modifier.weight(1f),
+            onClick = {currentActiveButton.value = 0},
+        ) 
         TabButton(
             text = "M",
             isActive = currentActiveButton.value == 1,
-            modifier = Modifier.weight(1f)
-        ) {
-            currentActiveButton.value = 1
-        }
+            modifier = Modifier.weight(1f),
+            onClick = {currentActiveButton.value = 1}
+        ) 
         TabButton(
             text = "L",
             isActive = currentActiveButton.value == 2,
-            modifier = Modifier.weight(1f)
-        ) {
-            currentActiveButton.value = 2
-        }
+            modifier = Modifier.weight(1f),
+            onClick = {currentActiveButton.value = 2}
+        )
         TabButton(
             text = "XL",
             isActive = currentActiveButton.value == 3,
-            modifier = Modifier.weight(1f)
-        ) {
-            currentActiveButton.value = 3
-        }
+            modifier = Modifier.weight(1f),
+            onClick = {currentActiveButton.value = 3}
+        )
     }
 }
 
@@ -214,7 +199,7 @@ fun ShirtOrderTitle(
     Text(
         text = title,
         style = TextStyle(
-            color = Color(0xFFFFFFFFF),
+            color = White,
             fontSize = 20.sp,
             fontWeight = FontWeight.Light,
             fontStyle = FontStyle.Italic
@@ -234,21 +219,21 @@ fun ShirtOrderTitle(
 }
 
 @Composable
-fun ShirtOrderContainer(shirts: List<Shirt>
+fun ShirtOrderContainer(designs: List<Design>
     ) {
-        val currentActiveButton = remember { mutableStateOf(0) }
+        val currentActiveButton = remember { mutableIntStateOf(0) }
         LazyColumn(){
-            item{ Spacer(modifier = Modifier.height(10.dp),)}
-            if (shirts.isEmpty()) {
+            item{ Spacer(modifier = Modifier.height(10.dp))}
+            if (designs.isEmpty()) {
                 item {
                     Text("No shirts available", modifier = Modifier.padding(16.dp))
                 }
             } else {
-            items(shirts.size){index ->
+            items(designs.size){index ->
                     ShirtButton(
-                        shirtName = shirts[index].name,
-                        isActive = currentActiveButton.value == shirts[index].hashCode(),
-                        imageUrl = shirts[index].imageUrl
+                        shirtName = designs[index].name,
+                        isActive = currentActiveButton.value == index,
+                        imageUrl = designs[index].imageUrl
                     ) {}
                     Spacer(modifier = Modifier.height(15.dp))
                 }
@@ -265,7 +250,7 @@ fun ShirtButton(shirtName: String,
     Button(shape = RoundedCornerShape(7.dp),
         elevation = null,
         colors = if (isActive) ButtonDefaults.buttonColors(
-            contentColor = Color.White, containerColor = Color.Black
+            contentColor = White, containerColor = Black
         ) else ButtonDefaults.buttonColors(contentColor = Black, containerColor = Color(0xFFFF6A2F)),
         modifier = Modifier
             .width(360.dp)
@@ -278,7 +263,7 @@ fun ShirtButton(shirtName: String,
                 .padding(vertical = 5.dp)
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.Absolute.SpaceEvenly
         ) {
             Text(
                 text = shirtName.uppercase(), style = MaterialTheme.typography.bodyLarge.copy(
@@ -288,45 +273,60 @@ fun ShirtButton(shirtName: String,
                 ), modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.width(5.dp))
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = shirtName,
-                modifier = Modifier.width(100.dp))
+            Image(
+                painter = rememberAsyncImagePainter(imageUrl),
+                contentDescription = "uhhh",
+                modifier = Modifier.size(100.dp),
+                alignment = Alignment.CenterEnd
+            )
+
         }
     }
 }
 
 @Composable
-fun ShirtOrderCard(shirtName: String, //pretvoriti u Buttone da se mogu highlightati
-                   @DrawableRes shirtImage: Int){
-    OutlinedCard(
-        modifier = Modifier
-            .width(360.dp)
-            .height(100.dp)
-            .fillMaxHeight(),
-        colors = CardDefaults.cardColors(containerColor = Color.Black),
-        border = BorderStroke(2.dp, Color.Gray)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 5.dp)
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Text(  //ime
-                text = shirtName.uppercase(), style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.White,
-                    //fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                ), modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            Spacer(modifier = Modifier.width(5.dp))
-            Image(painter = painterResource(id = shirtImage),
-                contentDescription = shirtName,
-                modifier = Modifier.width(100.dp)
-            )
+fun ShirtList(shirts: List<Shirt>) {
+    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        items(shirts) { shirt ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(shirt.design.name, modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(shirt.size)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(String.format("$%.2f", shirt.price))
+            }
         }
+    }
+}
 
+@Composable
+fun ShirtRow(shirt: Shirt) {
+
+}
+
+@Composable
+fun AddShirtsButton() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+            .height(50.dp),
+        horizontalArrangement = Arrangement.Center
+    ){
+        Button(
+            onClick = { },
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(LightGray),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp),
+        ){ Text(text = "Dodaj majice",
+            color = Color.Black,
+            fontSize = 20.sp) }
     }
 }

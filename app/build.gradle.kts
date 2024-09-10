@@ -43,9 +43,7 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        // Remove kotlinCompilerExtensionVersion as it's managed by the BOM
-    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -54,20 +52,20 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1") // Check for newer version
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.5") // Check for newer version
-    implementation("androidx.activity:activity-compose:1.9.2") // Check for newer version
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.5")
+    implementation("androidx.activity:activity-compose:1.9.2")
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
-    implementation(platform("androidx.compose:compose-bom:2024.09.00")) // Update to latest BOM
+    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0")) // Use Firebase BOM
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.0")
-    implementation("androidx.media3:media3-common:1.4.1") // Use -ktx version
+    implementation("androidx.media3:media3-common:1.4.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
@@ -77,6 +75,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("com.google.code.gson:gson:2.11.0")
-    implementation("androidx.navigation:navigation-compose:2.8.0") // Check for newer version
+    implementation("androidx.navigation:navigation-compose:2.8.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
 }

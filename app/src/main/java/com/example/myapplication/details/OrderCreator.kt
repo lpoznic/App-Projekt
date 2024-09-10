@@ -1,6 +1,5 @@
 package com.example.myapplication.details
 
-// ... other imports
 import FirestoreRepository
 import androidx.navigation.NavController
 import androidx.compose.foundation.BorderStroke
@@ -96,7 +95,7 @@ fun OrderCreatorContent(navController: NavController, order: Order?) {
                         totalPrice = 0.0,
 
                     )
-                    // Update the order in the database
+
                     updatedOrder?.let {
                         coroutineScope.launch {
                             repository.updateOrder(it)
@@ -104,7 +103,7 @@ fun OrderCreatorContent(navController: NavController, order: Order?) {
                         }
                     }
 
-                    navController.popBackStack(Screens.HomeScreen.route, false) // Navigate to HomePage after saving
+                    navController.popBackStack(Screens.HomeScreen.route, false)
                 }
 
             ) {
@@ -160,7 +159,6 @@ fun OrderCreatorContent(navController: NavController, order: Order?) {
                     colors = ButtonDefaults.buttonColors(Color.DarkGray),
                     onClick = {
                         val shirtsJson = Gson().toJson(order?.shirts)
-                        // Navigate with the JSON string as a query parameter
                         navController.navigate("${Screens.ShirtOrder.route}?shirts=$shirtsJson")
                               },
                 ) {
@@ -234,7 +232,6 @@ fun rememberOrderState(): MutableState<Order?> {
                     ),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                // ... (Other Text composables for price and quantity)
                 Image(
                     painter = rememberAsyncImagePainter(shirt.design.imageUrl),
                     contentDescription = shirt.design.name,

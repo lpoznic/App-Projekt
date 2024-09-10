@@ -77,16 +77,15 @@ fun HomeScreenContent(navController: NavController){
     val ordersRef = firestore.collection("orders")
 
     val orders = remember { mutableStateOf<List<Order>>(emptyList()) }
-    val scope = rememberCoroutineScope()  // Coroutine scope for managing side effects
+    val scope = rememberCoroutineScope()
 
-    // Function to fetch orders
+
     suspend fun fetchOrders() {
         val snapshot = ordersRef.get().await()
         orders.value = snapshot.toObjects(Order::class.java)
         Log.d("MyApp", "Orders fetched: ${orders.value}")
     }
 
-    // Fetch orders when the screen loads
     LaunchedEffect(Unit) {
         fetchOrders()
     }
@@ -220,7 +219,6 @@ fun OrderContainer(
             Text("Nema narudžbi", color = Color.White)
         }
 
-    // Log the orders that are passed to OrderContainer
     Log.d("MyApp", "Orders passed to OrderContainer: ${orders}")
     }
 

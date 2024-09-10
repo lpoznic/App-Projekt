@@ -100,7 +100,6 @@ fun AmountContainer() {
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(LightGray)
         ) {
-            // Inner content including an icon and a text label
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_plus),
                 contentDescription = "Favorite",
